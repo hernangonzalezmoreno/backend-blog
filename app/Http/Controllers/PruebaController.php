@@ -12,6 +12,8 @@ class PruebaController extends Controller
     //
 
     public function test(){
+
+      /*
       $posts = Post::all();
       //var_dump( $posts );
       foreach ($posts as $post) {
@@ -20,6 +22,19 @@ class PruebaController extends Controller
         echo "<p>".$post->content."</p>";
         echo '<hr>';
       }
+      */
+
+      $categories = Category::all();
+      foreach ( $categories as $category ) {
+        echo "<h3>{$category->name}</h3>";
+
+        foreach ( $category->posts as $post ) {
+          echo "<h4>{$post->title}</h4>";
+          echo "<p>{$post->content}</p>";
+          echo '<hr>';
+        }
+      }
+
       die();//corta la ejecucion y no me pide ninguna vista
     }
 
