@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -55,10 +56,30 @@ class UserController extends Controller
 
       }else{
         //La validacion paso correctamente
+
+        // Ciframos el password
+        // el cost indica la cantidad de veces a cifrar. En este caso aplicamos 4 veces el cifrado.
+        // Es decir, ciframos una vez, luego a ese cifrado lo volvemos a cifrar, y asi hasta hacerlo 4 veces
+        // Esto tiene costo computacional.
+        $password_cifrado = password_hash( $params->password, PASSWORD_BCRYPT, [ 'cost' => 4 ] );
+
+        // Creamos el usuario
+        $user = new User();
+        $user->name = $params_array[ 'name' ];
+        $user->surname = $params_array[ 'surname' ];
+        $user->email = $params_array[ 'email' ];
+        $user->password = $password_cifrado;
+        $user->role = "ROLE_USER";
+
+        // Guardamos el usuario en la base de datos
+        $user->save(); // Esto realiza todo lo necesario para guardar en la tabla users. Hacer el INSERT a MySQL
+
+        // Creamos el response
         $data = array(
           'status'  => 'success',
           'code'    => 200,
-          'message' => 'El usuario se a creado correctamente.'
+          'message' => 'El usuario se a creado correctamente.',
+          'user'    => $user
         );
       }
 
