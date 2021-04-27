@@ -22,3 +22,14 @@ Route::get('/', function () {
 //Route::get( '/prueba', [ PruebaController::class, 'test' ] );
 
 Route::get( '/prueba', 'App\Http\Controllers\PruebaController@test' );
+
+//Rutas de la API
+
+  //De prueba
+  Route::get( '/user/test', 'App\Http\Controllers\UserController@test' );
+  Route::get( '/category/test', 'App\Http\Controllers\CategoryController@test' );
+  Route::get( '/post/test', 'App\Http\Controllers\PostController@test' );
+
+  //Oficiales para la API Rest
+  Route::post( '/api/register', 'App\Http\Controllers\UserController@register' );
+  Route::post( '/api/login', 'App\Http\Controllers\UserController@login' );
