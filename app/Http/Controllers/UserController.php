@@ -40,7 +40,7 @@ class UserController extends Controller
       $validated = \Validator::make( $params_array, [
           'name'      => 'required|alpha',
           'surname'   => 'required|alpha',
-          'email'     => 'required|email',
+          'email'     => 'required|email|unique:users', // con unique verificamos que el email no este registrado en la tabla users. De lo contrario, la validacion falla
           'password'  => 'required',
       ]);
 
