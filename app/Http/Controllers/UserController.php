@@ -58,10 +58,8 @@ class UserController extends Controller
         //La validacion paso correctamente
 
         // Ciframos el password
-        // el cost indica la cantidad de veces a cifrar. En este caso aplicamos 4 veces el cifrado.
-        // Es decir, ciframos una vez, luego a ese cifrado lo volvemos a cifrar, y asi hasta hacerlo 4 veces
-        // Esto tiene costo computacional.
-        $password_cifrado = password_hash( $params->password, PASSWORD_BCRYPT, [ 'cost' => 4 ] );
+        // cambio de cifrado de password_hash() a hash(), ya que el otro metodo devuelve siempre un cifrado distinto
+        $password_cifrado = hash( 'sha256', $params->password );
 
         // Creamos el usuario
         $user = new User();
@@ -88,6 +86,16 @@ class UserController extends Controller
 
     public function login( Request $request ){
       $jwtAuth = new \JwtAuth();
-      return $jwtAuth->singup();
+
+      //Simulacion
+      $email = 'her@her.com';
+      $password = '123123';
+      $password_cifrado = hash( 'sha256', $password );
+
+      // Creamos el token y devuelvemos el valor del token
+      return response()->json( $jwtAuth->singup( $email, $password_cifrado ), 200 );
+
+      // Creamos el token y devolvemos los datos del usuario
+      //return response()->json( $jwtAuth->singup( $email, $password_cifrado, true ), 200 );
     }
 }
