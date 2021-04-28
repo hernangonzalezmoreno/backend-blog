@@ -87,15 +87,41 @@ class UserController extends Controller
     public function login( Request $request ){
       $jwtAuth = new \JwtAuth();
 
-      //Simulacion
-      $email = 'her@her.com';
-      $password = '123123';
-      $password_cifrado = hash( 'sha256', $password );
+      // Recibimos los datos
+      $json = $request->input( 'json', null );
+      $params_array = json_decode( $json, true );
 
-      // Creamos el token y devuelvemos el valor del token
-      return response()->json( $jwtAuth->singup( $email, $password_cifrado ), 200 );
+      // Aplico un trim a todos los datos del array para quitarle los espacios
+      $params_array = array_map( 'trim', $params_array );
 
-      // Creamos el token y devolvemos los datos del usuario
-      //return response()->json( $jwtAuth->singup( $email, $password_cifrado, true ), 200 );
+      // Validamos los datos
+      $validated = \Validator::make( $params_array, [
+          'email'     => 'required|email',
+          'password'  => 'required',
+      ]);
+
+      if( $validated->fails() ){
+        // La validacion ha fallado
+        $singup = array(
+          'status'  => 'error',
+          'code'    => 404,
+          'message' => 'No se a podido logear.',
+          'errors'  => $validated->errors()
+        );
+      }else{
+
+        // Ciframos el password
+        $password_cifrado = hash( 'sha256', $params_array[ 'password' ] );
+
+        // Comprobamos si debemos devolver el token o los datos
+        $getToken = empty( $params_array[ 'gettoken' ] )? null : true;
+
+        // Creamos el token
+        $singup = $jwtAuth->singup( $params_array[ 'email' ], $password_cifrado, $getToken );
+      }
+
+      // Devolvemos el resultado en formato JSON
+      return response()->json( $singup, 200 );
+
     }
 }
