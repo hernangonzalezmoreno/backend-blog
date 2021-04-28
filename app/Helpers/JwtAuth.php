@@ -14,7 +14,7 @@ class JwtAuth{
     $this->key = 'clave_781687125465738743_secreta';
   }
 
-  public function singup( $email, $password, $getToken = null ){
+  public function singup( $email, $password, $getDecodedToken = null ){
 
     // Buscamos si existe el usuario con sus credenciales
     // El metodo where() hace una busqueda SQL de usando WHERE
@@ -29,7 +29,7 @@ class JwtAuth{
     // Si exite un usuario, creamos un token
     if( $singup ){
 
-      $token = array(
+      $datasOfToken = array(
         'sub'     =>    $user->id,            // JWT maneja "id" con el nombre "sub"
         'email'   =>    $user->email,
         'name'    =>    $user->name,
@@ -38,10 +38,10 @@ class JwtAuth{
         'exp'     =>    time() + (7*24*60*60) // expira en una semana
       );
 
-      $jwt = JWT::encode( $token, $this->key, 'HS256' );
-      $decoded = JWT::decode( $jwt, $this->key, ['HS256'] );
+      $jwtToken = JWT::encode( $datasOfToken, $this->key, 'HS256' );
+      $decodedToken = JWT::decode( $jwtToken, $this->key, ['HS256'] );
 
-      $data = is_null( $getToken )? $jwt : $decoded;
+      $data = is_null( $getDecodedToken )? $jwtToken : $decodedToken;
 
     }else{
       $data = array(

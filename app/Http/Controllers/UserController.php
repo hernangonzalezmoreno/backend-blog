@@ -114,10 +114,13 @@ class UserController extends Controller
         $password_cifrado = hash( 'sha256', $params_array[ 'password' ] );
 
         // Comprobamos si debemos devolver el token o los datos
-        $getToken = empty( $params_array[ 'gettoken' ] )? null : true;
+        $getDecodedToken = empty( $params_array[ 'getDecodedToken' ] )? null : true;
 
         // Creamos el token
-        $singup = $jwtAuth->singup( $params_array[ 'email' ], $password_cifrado, $getToken );
+        $token = $jwtAuth->singup( $params_array[ 'email' ], $password_cifrado, $getDecodedToken );
+
+        // Listo para retornarlo
+        $singup = $token;
       }
 
       // Devolvemos el resultado en formato JSON
