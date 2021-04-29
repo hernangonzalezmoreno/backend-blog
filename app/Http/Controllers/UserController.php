@@ -38,20 +38,20 @@ class UserController extends Controller
       $params_array = array_map( 'trim', $params_array );
 
       // Validar los datos
-      $validated = \Validator::make( $params_array, [
+      $validate = \Validator::make( $params_array, [
           'name'      => 'required|alpha',
           'surname'   => 'required|alpha',
           'email'     => 'required|email|unique:users', // con unique verificamos que el email no este registrado en la tabla users. De lo contrario, la validacion falla
           'password'  => 'required',
       ]);
 
-      if( $validated->fails() ){
+      if( $validate->fails() ){
         //La validacion ha fallado
         $data = array(
           'status'  => 'error',
           'code'    => 404,
           'message' => 'Datos no validos. El usuario no se a creado.',
-          'errors'  => $validated->errors()
+          'errors'  => $validate->errors()
         );
 
       }else{
@@ -95,18 +95,18 @@ class UserController extends Controller
       $params_array = array_map( 'trim', $params_array );
 
       // Validamos los datos
-      $validated = \Validator::make( $params_array, [
+      $validate = \Validator::make( $params_array, [
           'email'     => 'required|email',
           'password'  => 'required',
       ]);
 
-      if( $validated->fails() ){
+      if( $validate->fails() ){
         // La validacion ha fallado
         $singup = array(
           'status'  => 'error',
           'code'    => 404,
           'message' => 'No se a podido logear.',
-          'errors'  => $validated->errors()
+          'errors'  => $validate->errors()
         );
       }else{
 
@@ -130,17 +130,58 @@ class UserController extends Controller
 
     public function update( Request $request ){
 
+      // Verificamos el token
       $jwtToken = $request->header('Authorization');
       $jwtAuth = new \JwtAuth();
       $checkToken = $jwtAuth->checkToken( $jwtToken );
 
-      if( $checkToken ){
-        echo "<h1>Token correcto</h1>";
+      // Obtenemos los datos por post
+      $json = $request->input( 'json', null );
+      $params_array = json_decode( $json, true );
+
+      // Si el token es correcto y tenemos datos por post
+      if( $checkToken && !empty( $params_array ) ){
+
+        // Obtenemos el usuario indentificado
+        $user = $jwtAuth->checkToken( $jwtToken, true );
+
+        // Validamos
+        $validate = \Validator::make( $params_array, [
+            'nombre'  => 'required|alpha',
+            'surname' => 'required|alpha',
+            'email'   => 'required|email|unique:users,'.$user->sub
+        ]);
+
+        // Quitamos campos que no queremos actualizar
+        unset( $params_array[ 'id' ] );
+        unset( $params_array[ 'role' ] );
+        unset( $params_array[ 'password' ] );
+        unset( $params_array[ 'created_at' ] );
+        unset( $params_array[ 'remember_token' ] );
+
+        // Actualizamos el usuario en la Base de Datos
+        $user_update = User::where( 'id', $user->sub )->update( $params_array );
+
+        // Creamos la respuesta
+        $data = array(
+          'code'    => 200,
+          'status'  => 'success',
+          'message' => 'Se ha actualizado el usuario.',
+          'user'    => $user,
+          'changes' => $params_array
+        );
+
       }else{
-        echo "<h1>Token incorrecto</h1>";
+
+        $data = array(
+          'code'    => 400,
+          'status'  => 'error',
+          'message' => 'El usuario no esta autentificado.'
+        );
+
       }
 
-      die();
+      return response()->json( $data, $data[ 'code' ] );
     }
 
 }

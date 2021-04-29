@@ -33,4 +33,4 @@ Route::get( '/prueba', 'App\Http\Controllers\PruebaController@test' );
   //Oficiales para la API Rest
   Route::post( '/api/register', 'App\Http\Controllers\UserController@register' );
   Route::post( '/api/login', 'App\Http\Controllers\UserController@login' );
-  Route::post( '/api/user/update', 'App\Http\Controllers\UserController@update' );
+  Route::put( '/api/user/update', 'App\Http\Controllers\UserController@update' );
