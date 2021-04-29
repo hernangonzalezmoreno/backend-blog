@@ -189,7 +189,12 @@ class UserController extends Controller
       // Obtenemos la imagen
       $image = $request->file( 'file0' );
 
-      if( $image ){
+      // Validamos que sea una imagen
+      $validate = \Validator::make( $request->all(), [
+          'file0' => 'required|image|mimes:jpg,jpeg,png,gif'
+      ]);
+
+      if( $image && !$validate->fails() ){
 
         // Obtenemos el nombre de la imagen y le concatenamos el tiempo UNIX, para que sea unico e irrepetible
         $image_name = time().'_'.$image->getClientOriginalName();
