@@ -27,15 +27,20 @@ Route::get( '/prueba', 'App\Http\Controllers\PruebaController@test' );
 
 //Rutas de la API
 
-  //De prueba
+  //--------- De prueba
   Route::get( '/user/test', 'App\Http\Controllers\UserController@test' );
   Route::get( '/category/test', 'App\Http\Controllers\CategoryController@test' );
   Route::get( '/post/test', 'App\Http\Controllers\PostController@test' );
 
-  //Oficiales para la API Rest
+  //--------- Oficiales para la API Rest
+
+  // Rutas para el User
   Route::post( '/api/register', 'App\Http\Controllers\UserController@register' );
   Route::post( '/api/login', 'App\Http\Controllers\UserController@login' );
   Route::put( '/api/user/update', 'App\Http\Controllers\UserController@update' );
   Route::post( '/api/user/upload', 'App\Http\Controllers\UserController@upload' )->middleware( ApiAuthMiddleware::class );
   Route::get( '/api/user/avatar/{filename}', '\App\Http\Controllers\UserController@getImage' );
   Route::get( '/api/user/detail/{id}', '\App\Http\Controllers\UserController@detail' );
+
+  // Rutas para la Category
+  Route::resource( '/api/category', 'App\Http\Controllers\CategoryController' );
