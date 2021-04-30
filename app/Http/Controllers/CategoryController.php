@@ -7,6 +7,11 @@ use App\Models\Category;
 
 class CategoryController extends Controller
 {
+
+    public function __construct(){
+      $this->middleware( 'api.auth', [ 'except' => [ 'test', 'index', 'show' ] ] );
+    }
+
     public function test(){
       echo 'Probando Category Controller';
     }
