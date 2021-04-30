@@ -44,3 +44,6 @@ Route::get( '/prueba', 'App\Http\Controllers\PruebaController@test' );
 
   // Rutas para la Category
   Route::resource( '/api/category', 'App\Http\Controllers\CategoryController' );
+
+  // Rutas para los Posts
+  Route:: resource( '/api/post', 'App\Http\Controllers\PostController' );
