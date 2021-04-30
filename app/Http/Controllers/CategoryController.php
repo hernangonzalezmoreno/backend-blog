@@ -49,4 +49,49 @@ class CategoryController extends Controller
       return response()->json( $data, $data[ 'code' ] );
 
     }
+
+    public function store( Request $request ){
+
+      $json = $request->input( 'json', null );
+      $params_array = json_decode( $json, true );
+
+      if( !empty( $params_array ) ){
+
+        // Validamos los datos
+        $validate = \Validator::make( $params_array, [
+          'name' => 'required|unique:categories'
+        ]);
+
+        if( !$validate->fails() ){
+
+          // Creamos la nueva categoria y la salvamos en la Base de Datos
+          $category = new Category();
+          $category->name = $params_array[ 'name' ];
+          $category->save();
+
+          $data = array(
+            'code'    => 200,
+            'status'  => 'success',
+            'category' => $category,
+          );
+
+        }else{
+          $data = array(
+            'code'    => 400,
+            'status'  => 'error',
+            'message' => 'Los parametros no son validos.',
+          );
+        }
+
+      }else{
+        $data = array(
+          'code'    => 400,
+          'status'  => 'error',
+          'message' => 'Faltan los parametros.',
+        );
+      }
+
+      return response()->json( $data, $data[ 'code' ] );
+
+    }
 }
