@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Helpers\JwtAuth;
 
 class PostController extends Controller
 {
@@ -54,6 +55,67 @@ class PostController extends Controller
           'message'   => 'El post no existe.',
         );
 
+      }
+
+      return response()->json( $data, $data['code'] );
+    }
+
+    public function store( Request $request ){
+
+      // Obtengo los datos del usuario que quiere agregar un nuevo Post
+      $jwtAuth = new JwtAuth();
+      $jwtToken = $request->header( 'Authorization' );
+      $user = $jwtAuth->checkToken( $jwtToken, true );
+
+      // Obtengo los datos del Post
+      $json = $request->input('json');
+      $params = json_decode( $json );
+      $params_array = json_decode( $json, true );
+
+      if( !empty( $params ) ){
+
+        // Valido los datos del Post
+        $validate = \Validator::make( $params_array, [
+          'category_id' => 'required',
+          'title'       => 'required',
+          'content'     => 'required',
+        ]);
+
+        if( !$validate->fails() ){
+
+          // Creo el post
+          $post = new Post();
+          $post->user_id      = $user->sub;
+          $post->category_id  = $params->category_id;
+          $post->title        = $params->title;
+          $post->content      = $params->content;
+
+          $post->image = isset( $params->image )? $params->image : null;
+
+          // Guardo el post
+          $post->save();
+
+          $data = [
+            'code'    => 200,
+            'status'  => 'success',
+            'post' => $post,
+          ];
+
+        }else{
+          $data = [
+            'code'    => 400,
+            'status'  => 'error',
+            'message' => 'Los argumentos no son validos.',
+          ];
+        }
+
+
+      }else{
+        $data = [
+          'code'    => 400,
+          'status'  => 'error',
+          'message' => 'Faltan los argumentos.'
+        ];
       }
 
       return response()->json( $data, $data['code'] );
