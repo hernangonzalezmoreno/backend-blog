@@ -121,4 +121,50 @@ class PostController extends Controller
       return response()->json( $data, $data['code'] );
     }
 
+    public function update( $id, Request $request ){
+
+      // Mensaje de respuesta de error por default
+      $data = [
+        'code' => 400,
+        'status' => 'error',
+      ];
+
+      // Obtenemos los parametros
+      $json = $request->input( 'json' );
+      $params_array = json_decode( $json, true );
+
+      // Comprobamos que no esten vacios los parametros
+      if( empty( $params_array ) ){
+        $data[ 'message' ] = 'No se recibieron los parametros.';
+        return response()->json( $data, $data['code'] );
+      }
+
+      // Validamos los parametros
+      $validate = \Validator::make( $params_array, [
+        'category_id' => 'required',
+        'title'       => 'required',
+        'content'     => 'required',
+      ]);
+
+      if( $validate->fails() ){
+        $data[ 'message' ] = 'Los parametros no son validos.';
+        $data[ 'validate_errors' ] = $validate->errors();
+        return response()->json( $data, $data['code'] );
+      }
+
+      // Actualizamos el post
+      $result = Post::where( 'id', $id )->update( $params_array ); // nos devuelve 'true' si pudo actualizar con exito, o 'false' en caso contrario
+      //$post = Post::where( 'id', $id )->updateOrCreate( $params_array ); // nos devuelve el registro actualizado, o si no existe lo crea y lo devuelve
+
+      // Mensaje de respuesta de exito
+      $data = [
+        'code' => 200,
+        'status' => 'success',
+        'changes' => $params_array,
+        //'post' => $post,
+      ];
+
+      return response()->json( $data, $data['code'] );
+    }
+
 }
