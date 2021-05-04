@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Models\Post;
 use App\Helpers\JwtAuth;
 
@@ -10,7 +11,7 @@ class PostController extends Controller
 {
 
     public function __construct(){
-      $this->middleware( 'api.auth', [ 'except' => [ 'test', 'index', 'show' ] ] );
+      $this->middleware( 'api.auth', [ 'except' => [ 'test', 'index', 'show', 'getImage' ] ] );
     }
 
     private function getUserIdentity( Request $request ){
@@ -258,6 +259,29 @@ class PostController extends Controller
 
       }
 
+      return response()->json( $data, $data['code'] );
+
+    }
+
+    public function getImage( $filename ){
+
+      // Comprobamos si existe
+      $isset = \Storage::disk( 'images' )->exists( $filename );
+
+      if( $isset ){
+
+        // Obtenemos la imagen
+        $file = \Storage::disk( 'images' )->get( $filename );
+
+        // Devolvemos la imagen
+        return new Response( $file, 200 );
+      }
+
+      $data = [
+        'code' => 404,
+        'status' => 'error',
+        'message' => 'La imagen no existe.',
+      ];
       return response()->json( $data, $data['code'] );
 
     }
