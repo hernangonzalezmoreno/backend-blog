@@ -11,7 +11,14 @@ class PostController extends Controller
 {
 
     public function __construct(){
-      $this->middleware( 'api.auth', [ 'except' => [ 'test', 'index', 'show', 'getImage' ] ] );
+      $this->middleware( 'api.auth', [ 'except' => [
+        'test',
+        'index',
+        'show',
+        'getImage',
+        'getPostsByCategory',
+        'getPostsByUser',
+      ] ] );
     }
 
     private function getUserIdentity( Request $request ){
@@ -283,6 +290,30 @@ class PostController extends Controller
         'message' => 'La imagen no existe.',
       ];
       return response()->json( $data, $data['code'] );
+
+    }
+
+    public function getPostsByCategory( $category_id ){
+
+      // Obtenemos todos los posts de determinada categoria
+      $posts = Post::where( 'category_id', $category_id )->get();
+
+      return response()->json([
+        'status' => 'success',
+        'posts'  => $posts
+      ], 200);
+
+    }
+
+    public function getPostsByUser( $user_id ){
+
+      // Obtenemos todos los posts de determinada categoria
+      $posts = Post::where( 'user_id', $user_id )->get();
+
+      return response()->json([
+        'status' => 'success',
+        'posts'  => $posts
+      ], 200);
 
     }
 

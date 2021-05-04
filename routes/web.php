@@ -49,3 +49,5 @@ Route::get( '/prueba', 'App\Http\Controllers\PruebaController@test' );
   Route:: resource( '/api/post', 'App\Http\Controllers\PostController' );
   Route::post( '/api/post/upload', 'App\Http\Controllers\PostController@upload' );
   Route::get( '/api/post/image/{filename}', 'App\Http\Controllers\PostController@getImage' );
+  Route::get( '/api/post/category/{category_id}', 'App\Http\Controllers\PostController@getPostsByCategory' );
+  Route::get( '/api/post/user/{user_id}', 'App\Http\Controllers\PostController@getPostsByUser' );
