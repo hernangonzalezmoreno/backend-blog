@@ -13,6 +13,12 @@ class PostController extends Controller
       $this->middleware( 'api.auth', [ 'except' => [ 'test', 'index', 'show' ] ] );
     }
 
+    private function getUserIdentity( Request $request ){
+      $jwtAuth = new JwtAuth();
+      $jwtToken = $request->header( 'Authorization' );
+      return $jwtAuth->checkToken( $jwtToken, true );
+    }
+
     public function test(){
       echo 'Probando Post Controller';
     }
@@ -63,9 +69,7 @@ class PostController extends Controller
     public function store( Request $request ){
 
       // Obtengo los datos del usuario que quiere agregar un nuevo Post
-      $jwtAuth = new JwtAuth();
-      $jwtToken = $request->header( 'Authorization' );
-      $user = $jwtAuth->checkToken( $jwtToken, true );
+      $user = $this->getUserIdentity( $request );
 
       // Obtengo los datos del Post
       $json = $request->input('json');
@@ -152,32 +156,56 @@ class PostController extends Controller
         return response()->json( $data, $data['code'] );
       }
 
-      // Actualizamos el post
-      $result = Post::where( 'id', $id )->update( $params_array ); // nos devuelve 'true' si pudo actualizar con exito, o 'false' en caso contrario
+      // Actualizamos el post (sin preguntar por el usuario)
+      //$result = Post::where( 'id', $id )->update( $params_array ); // nos devuelve 'true' si pudo actualizar con exito, o 'false' en caso contrario
       //$post = Post::where( 'id', $id )->updateOrCreate( $params_array ); // nos devuelve el registro actualizado, o si no existe lo crea y lo devuelve
+
+      // Obtenemos la identificacion del usuario que quiere hacer la modificacion del post
+      $user = $this->getUserIdentity( $request );
+
+      // Obtenemos el post que se quiere modificar, y comprobamos que el usuario sea propietario del mismo
+      $post = Post::where( 'id', $id )
+                  ->where( 'user_id', $user->sub )
+                  ->first();
+
+      if( empty( $post ) || !is_object( $post ) ){
+        $data[ 'message' ] = 'El post no existe, o el usuario autentificado no es el propietario.';
+        return response()->json( $data, $data['code'] );
+      }
+
+      // Actualizamos el registro
+      $post->update( $params_array );
 
       // Mensaje de respuesta de exito
       $data = [
         'code' => 200,
         'status' => 'success',
         'changes' => $params_array,
-        //'post' => $post,
+        'post' => $post,
       ];
 
       return response()->json( $data, $data['code'] );
     }
 
-    public function destroy( $id ){
+    public function destroy( $id, Request $request ){
+
+      // Obtenemos el usuario que quiere realizar la eliminacion del post
+      $user = $this->getUserIdentity( $request );
 
       // Obtenemos el post
-      $post = Post::find( $id );
+      //$post = Post::find( $id );
+
+      // Obtenemos el post solo si el usuario autentificado es quien creo el post
+      $post = Post::where( 'id', $id )
+                  ->where( 'user_id', $user->sub )
+                  ->first();
 
       // Si no existe retornamos error
       if( empty( $post ) ){
         $data = [
           'code'    => 404,
           'status'  => 'error',
-          'message' => 'El post no existe.'
+          'message' => 'El post no existe, o el usuario autentificado no es el propietario.'
         ];
         return response()->json( $data, $data['code'] );
       }
