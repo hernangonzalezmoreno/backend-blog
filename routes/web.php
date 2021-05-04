@@ -47,3 +47,4 @@ Route::get( '/prueba', 'App\Http\Controllers\PruebaController@test' );
 
   // Rutas para los Posts
   Route:: resource( '/api/post', 'App\Http\Controllers\PostController' );
+  Route::post( '/api/post/upload', 'App\Http\Controllers\PostController@upload' );
