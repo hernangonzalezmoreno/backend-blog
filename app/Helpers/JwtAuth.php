@@ -16,6 +16,9 @@ class JwtAuth{
 
   public function singup( $email, $password, $getDecodedToken = null ){
 
+    // El dato de retorno por default es false
+    $data = false;
+
     // Buscamos si existe el usuario con sus credenciales
     // El metodo where() hace una busqueda SQL de usando WHERE
     $user = User::where([
@@ -43,11 +46,6 @@ class JwtAuth{
 
       $data = is_null( $getDecodedToken )? $jwtToken : $decodedToken;
 
-    }else{
-      $data = array(
-        'status'  => 'error',
-        'message' => 'Error en el login.'
-      );
     }
 
     return $data;

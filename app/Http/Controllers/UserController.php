@@ -106,7 +106,7 @@ class UserController extends Controller
         $singup = array(
           'status'  => 'error',
           'code'    => 404,
-          'message' => 'No se a podido logear.',
+          'message' => 'Datos no validos.',
           'errors'  => $validate->errors()
         );
       }else{
@@ -120,12 +120,24 @@ class UserController extends Controller
         // Creamos el token
         $token = $jwtAuth->singup( $params_array[ 'email' ], $password_cifrado, $getDecodedToken );
 
-        // Listo para retornarlo
-        $singup = $token;
+        if( !$token ){
+          $singup = [
+            'code' => 400,
+            'status' => 'error',
+            'message' => 'Error en el login.'
+          ];
+        }else{
+          $singup = [
+            'code' => 200,
+            'status' => 'success',
+            $getDecodedToken? 'user' : 'token' => $token,
+          ];
+        }
+
       }
 
       // Devolvemos el resultado en formato JSON
-      return response()->json( $singup, 200 );
+      return response()->json( $singup, $singup['code'] );
 
     }
 
