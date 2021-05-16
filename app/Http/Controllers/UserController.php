@@ -160,17 +160,20 @@ class UserController extends Controller
 
         // Validamos
         $validate = \Validator::make( $params_array, [
-            'nombre'  => 'required|alpha',
+            'name'  => 'required|alpha',
             'surname' => 'required|alpha',
             'email'   => 'required|email|unique:users,'.$user->sub
         ]);
 
         // Quitamos campos que no queremos actualizar
         unset( $params_array[ 'id' ] );
+        unset( $params_array[ 'sub' ] );
         unset( $params_array[ 'role' ] );
         unset( $params_array[ 'password' ] );
         unset( $params_array[ 'created_at' ] );
         unset( $params_array[ 'remember_token' ] );
+        unset( $params_array[ 'iat' ] );
+        unset( $params_array[ 'exp' ] );
 
         // Actualizamos el usuario en la Base de Datos
         $user_update = User::where( 'id', $user->sub )->update( $params_array );
