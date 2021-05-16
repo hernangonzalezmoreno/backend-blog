@@ -37,6 +37,7 @@ class JwtAuth{
         'email'   =>    $user->email,
         'name'    =>    $user->name,
         'surname' =>    $user->surname,
+        'description' => $user->description,
         'iat'     =>    time(),               // fecha y hora de la creacion del Token
         'exp'     =>    time() + (7*24*60*60) // expira en una semana
       );
