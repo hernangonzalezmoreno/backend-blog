@@ -33,13 +33,14 @@ class JwtAuth{
     if( $singup ){
 
       $datasOfToken = array(
-        'sub'     =>    $user->id,            // JWT maneja "id" con el nombre "sub"
-        'email'   =>    $user->email,
-        'name'    =>    $user->name,
-        'surname' =>    $user->surname,
-        'description' => $user->description,
-        'iat'     =>    time(),               // fecha y hora de la creacion del Token
-        'exp'     =>    time() + (7*24*60*60) // expira en una semana
+        'sub'         =>    $user->id,            // JWT maneja "id" con el nombre "sub"
+        'email'       =>    $user->email,
+        'name'        =>    $user->name,
+        'surname'     =>    $user->surname,
+        'description' =>    $user->description,
+        'image'       =>    $user->image,
+        'iat'         =>    time(),               // fecha y hora de la creacion del Token
+        'exp'         =>    time() + (7*24*60*60) // expira en una semana
       );
 
       $jwtToken = JWT::encode( $datasOfToken, $this->key, 'HS256' );
