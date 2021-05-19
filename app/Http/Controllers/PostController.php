@@ -262,6 +262,7 @@ class PostController extends Controller
           'code' => 200,
           'status' => 'success',
           'message' => 'La imagen se ha guardado correctamente.',
+          'image'   => $image_name,
         ];
 
       }
