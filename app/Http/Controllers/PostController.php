@@ -51,9 +51,11 @@ class PostController extends Controller
       if( is_object( $post ) ){
 
         // Si el post existe, entonces tambien le pido que cargue su categoria
-        $post->load( 'category' );
+        //$post->load( 'category' );
         // Tambien podria pedirle el usuario. El orden de los argumentos no importa
-        // $post->load( 'user', 'category' );
+         $post->load( 'user', 'category' );
+        // O de esta otra forma, da igual
+        //$post->load( 'category' )->load( 'user' );
 
         $data = array(
           'code'   => 200,
