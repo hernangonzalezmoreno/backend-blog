@@ -7,6 +7,12 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Acerca del proyecto
+
+Un Backend API-RESTful para un blog hecho con Laravel. Este proyecto se puede utilizar en conjunto con mi otro repositorio llamado [frontend-blog-angular](https://github.com/hernangonzalezmoreno/frontend-blog-angular), que es un cliente para consumir esta API.
+
+Además, puede ver este backend implementado en el siguiente sitio: [blog.moduchip.com.ar](http://blog.moduchip.com.ar)
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
